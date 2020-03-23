@@ -125,6 +125,7 @@ def display_instances(image, boxes, masks, class_ids, class_names, img_name,
     final_image = masked_image.astype(np.uint8)
     for i in range(N):
         color = colors[i]
+        cv2_colour = (int(255 * color[0]), int(255 * color[1]), int(255 * color[2]))  # tuple for cv2 colour format
 
         # Bounding box
         if not np.any(boxes[i]):
@@ -136,18 +137,7 @@ def display_instances(image, boxes, masks, class_ids, class_names, img_name,
                                 alpha=0.7, linestyle="dashed",
                                 edgecolor=color, facecolor='none')
             ax.add_patch(p)
-            cv2.rectangle(final_image, (x1, y1), (x2, y2), color)
-
-        # Label
-        if not captions:
-            class_id = class_ids[i]
-            score = scores[i] if scores is not None else None
-            label = class_names[class_id]
-            caption = "{} {:.3f}".format(label, score) if score else label
-        else:
-            caption = captions[i]
-        ax.text(x1, y1 + 8, caption,
-                color='w', size=11, backgroundcolor="none")
+            cv2.rectangle(final_image, (x1, y1), (x2, y2), cv2_colour)
 
         # Mask
         mask = masks[:, :, i]
@@ -165,6 +155,19 @@ def display_instances(image, boxes, masks, class_ids, class_names, img_name,
             verts = np.fliplr(verts) - 1
             p = Polygon(verts, facecolor="none", edgecolor=color)
             ax.add_patch(p)
+
+        # Label
+        if not captions:
+            class_id = class_ids[i]
+            score = scores[i] if scores is not None else None
+            label = class_names[class_id]
+            caption = "{} {:.3f}".format(label, score) if score else label
+        else:
+            caption = captions[i]
+        ax.text(x1, y1 + 8, caption,
+                color='w', size=11, backgroundcolor="none")
+        cv2.putText(final_image, caption, (x1, y1 + 10), cv2.FONT_HERSHEY_PLAIN, 0.8, (255, 255, 255), 1)
+
     ax.imshow(masked_image.astype(np.uint8))
     if auto_show:
         final_image = cv2.cvtColor(final_image, cv2.COLOR_BGR2RGB)
