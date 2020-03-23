@@ -14,6 +14,7 @@ import itertools
 import colorsys
 
 import numpy as np
+import cv2
 from skimage.measure import find_contours
 import matplotlib.pyplot as plt
 from matplotlib import patches,  lines
@@ -80,7 +81,7 @@ def apply_mask(image, mask, color, alpha=0.5):
     return image
 
 
-def display_instances(image, boxes, masks, class_ids, class_names,
+def display_instances(image, boxes, masks, class_ids, class_names, img_name,
                       scores=None, title="",
                       figsize=(16, 16), ax=None,
                       show_mask=True, show_bbox=True,
@@ -121,6 +122,7 @@ def display_instances(image, boxes, masks, class_ids, class_names,
     ax.set_title(title)
 
     masked_image = image.astype(np.uint32).copy()
+    final_image = masked_image.astype(np.uint8)
     for i in range(N):
         color = colors[i]
 
@@ -134,6 +136,7 @@ def display_instances(image, boxes, masks, class_ids, class_names,
                                 alpha=0.7, linestyle="dashed",
                                 edgecolor=color, facecolor='none')
             ax.add_patch(p)
+            cv2.rectangle(final_image, (x1, y1), (x2, y2), color)
 
         # Label
         if not captions:
@@ -149,7 +152,7 @@ def display_instances(image, boxes, masks, class_ids, class_names,
         # Mask
         mask = masks[:, :, i]
         if show_mask:
-            masked_image = apply_mask(masked_image, mask, color)
+            final_image = apply_mask(final_image, mask, color)
 
         # Mask Polygon
         # Pad to ensure proper polygons for masks that touch image edges.
@@ -164,7 +167,9 @@ def display_instances(image, boxes, masks, class_ids, class_names,
             ax.add_patch(p)
     ax.imshow(masked_image.astype(np.uint8))
     if auto_show:
-        plt.show()
+        final_image = cv2.cvtColor(final_image, cv2.COLOR_BGR2RGB)
+        cv2.imshow("Image masks", final_image)
+        cv2.waitKey(1)
 
 
 def display_differences(image,
