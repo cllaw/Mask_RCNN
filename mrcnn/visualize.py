@@ -81,7 +81,7 @@ def apply_mask(image, mask, color, alpha=0.5):
     return image
 
 
-def display_instances(image, boxes, masks, class_ids, class_names, img_name,
+def display_instances(image, boxes, masks, class_ids, class_names,
                       scores=None, title="",
                       figsize=(16, 16), ax=None,
                       show_mask=True, show_bbox=True,
@@ -172,7 +172,7 @@ def display_instances(image, boxes, masks, class_ids, class_names, img_name,
     if auto_show:
         final_image = cv2.cvtColor(final_image, cv2.COLOR_BGR2RGB)
         cv2.imshow("Image masks", final_image)
-        cv2.waitKey(1)
+        cv2.waitKey(0)
 
 
 def display_differences(image,

@@ -38,6 +38,7 @@ class InferenceConfig(coco.CocoConfig):
     GPU_COUNT = 1
     IMAGES_PER_GPU = 1
 
+
 config = InferenceConfig()
 config.display()
 
@@ -81,4 +82,4 @@ for idx, img_name in enumerate(sorted(os.listdir(IMAGE_DIR))):
     # Visualize results
     r = results[0]
     visualize.display_instances(image, r['rois'], r['masks'], r['class_ids'],
-                                class_names, img_name, r['scores'])
+                                class_names, r['scores'])
